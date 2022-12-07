@@ -6,6 +6,8 @@ import '../model/Anotacao.dart';
 class AnotacaoHelper {
 
   static final nomeTabela = "anotacao";
+  static final colunaId = "id";
+
   static final AnotacaoHelper _anotacaoHelper = AnotacaoHelper._internal();
  Database? _db;
 
@@ -56,6 +58,36 @@ class AnotacaoHelper {
     int resultado = await bancoDados.insert(nomeTabela, anotacao.toMap() );
     return resultado;
 
+  }
+
+  recuperarAnotacoes() async{
+
+    var bancoDados = await db;
+    String sql = "SELECT * FROM $nomeTabela ORDER BY data DESC ";
+    List anotacoes = await bancoDados.rawQuery( sql );
+    return anotacoes;
+
+  }
+
+  Future <int> atualizarAnotacao(Anotacao anotacao) async{
+
+    var bancoDados = await db;
+    return await bancoDados.update(
+      nomeTabela,
+      anotacao.toMap(),
+      where: "id = ?",
+      whereArgs: [anotacao.id]
+    );
+  }
+
+  Future<int> removerAnotacao(int? id) async{
+
+    var bancoDados = await db;
+    return await bancoDados.delete(
+      nomeTabela,
+      where: "id = ?",
+      whereArgs: [id]
+    );
   }
 
 }
